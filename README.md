@@ -2,7 +2,7 @@
 
 This is a small Python app for a classroom session about one question: **"If AI can write the code, what is the engineer's job?"**
 
-A rover sits on a grid of Mars sand and has to reach a green flag without driving into rocks. You start by driving it by hand. Then you use GitHub Copilot, live, to add route planning, and finally you respond to a new requirement from the class: a battery budget.
+A rover sits on an orbital map of the Martian surface, divided into a grid, and has to reach a target crosshair without driving into boulders. You start by driving it by hand. Then you use GitHub Copilot, live, to add route planning, and finally you respond to a new requirement from the class: a battery budget.
 
 > The route-finding algorithm is ordinary code (breadth-first search). The deep learning is in the coding assistant that helped write it, not in the rover.
 
