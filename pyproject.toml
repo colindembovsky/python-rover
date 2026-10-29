@@ -1,0 +1,7 @@
+[project]
+name = "python-rover"
+version = "0.1.0"
+description = "Mars Rover Mission Control: a tiny Python rover that drives through a Mars maze, for teaching"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []

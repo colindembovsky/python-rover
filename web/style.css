@@ -1,0 +1,266 @@
+/* Mars Rover Mission Control: a printed board game on a dark table.
+   Sized to be read from the back of a classroom on a projector. */
+:root {
+  --table: #191311;
+  --table-2: #241b17;
+  --frame: #2e211b;
+  --cream: #f6eddc;
+  --cream-2: #e6d8bf;
+  --ink: #1d1612;
+  --ink-soft: #4a3b31;
+  --muted: #cbb9a2;
+  --sand: #d98c4f;
+  --navy: #1f3b73;
+  --navy-2: #2c5199;
+  --good: #2f7d4f;
+  --bad: #b3261e;
+  --todo: #f2c230;
+  --radius: 10px;
+  --press: 0 4px 0 #0d0a08, 0 8px 18px rgb(0 0 0 / 0.35);
+  --press-down: 0 1px 0 #0d0a08, 0 2px 6px rgb(0 0 0 / 0.35);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { font-size: 18px; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--table);
+  color: var(--cream);
+  font-family: var(--font);
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+  padding: 14px 24px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+h1, h2, p { margin: 0; }
+
+/* ---------- Top bar ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+h1 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.mazes { display: flex; align-items: center; gap: 12px; }
+.mazes-label { font-weight: 700; color: var(--muted); }
+.maze-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- Card-stock buttons ---------- */
+
+button, input { font: inherit; }
+
+.card {
+  appearance: none;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--cream);
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--press);
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out, background-color 120ms ease-out;
+}
+
+.card:hover { background: #fff8ea; }
+.card:active { transform: translateY(3px); box-shadow: var(--press-down); }
+.card:focus-visible, input:focus-visible {
+  outline: 4px solid var(--todo);
+  outline-offset: 3px;
+}
+.card:disabled { cursor: wait; opacity: 0.6; transform: none; box-shadow: var(--press-down); }
+
+.tab { font-size: 1rem; padding: 8px 14px; }
+.tab[aria-pressed="true"] {
+  background: var(--navy);
+  border-color: var(--cream);
+  color: var(--cream);
+  transform: translateY(3px);
+  box-shadow: var(--press-down);
+}
+
+
+/* ---------- Status rules card ---------- */
+
+.status {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 22px 12px 14px;
+  background: var(--cream);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 0.4);
+  min-height: 80px;
+}
+
+.status-icon {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  font-size: 2.1rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--cream);
+  background: var(--ink-soft);
+  border-radius: 12px;
+}
+.status-icon::before { content: "i"; font-family: Georgia, "Times New Roman", serif; font-style: italic; }
+
+.status-title {
+  font-size: 1.75rem;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.status-detail { font-size: 1.05rem; color: var(--ink-soft); margin-top: 2px; max-width: 75ch; }
+.status-detail:empty { display: none; }
+
+/* Good: green circle with a tick. */
+.status[data-kind="good"] { background: #e3f1e4; }
+.status[data-kind="good"] .status-icon { background: var(--good); border-radius: 50%; }
+.status[data-kind="good"] .status-icon::before { content: "✓"; font-family: var(--font); font-style: normal; }
+.status[data-kind="good"] .status-title { color: #1d5434; }
+
+/* Bad: red stop-sign octagon with a cross, on a striped card. */
+.status[data-kind="bad"] {
+  background:
+    repeating-linear-gradient(-45deg, rgb(179 38 30 / 0.10) 0 12px, transparent 12px 24px),
+    #fbe6e1;
+}
+.status[data-kind="bad"] .status-icon {
+  background: var(--bad);
+  border-radius: 0;
+  clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
+}
+.status[data-kind="bad"] .status-icon::before { content: "✕"; font-family: var(--font); font-style: normal; }
+.status[data-kind="bad"] .status-title { color: #8a1c15; }
+
+/* To do: yellow-and-black hazard tape with a warning triangle. */
+.status[data-kind="todo"] {
+  background:
+    linear-gradient(var(--cream), var(--cream)) padding-box,
+    repeating-linear-gradient(-45deg, var(--ink) 0 14px, var(--todo) 14px 28px) border-box;
+  border: 10px solid transparent;
+  padding: 4px 14px 4px 6px;
+}
+.status[data-kind="todo"] .status-icon {
+  background: var(--ink);
+  color: var(--todo);
+  border-radius: 0;
+  clip-path: polygon(50% 2%, 100% 96%, 0 96%);
+  padding-top: 18px;
+  font-size: 1.8rem;
+}
+.status[data-kind="todo"] .status-icon::before { content: "!"; font-family: var(--font); font-style: normal; }
+
+.status.bump { animation: bump 260ms cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes bump {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  55% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
+/* ---------- Table: board + side panel ---------- */
+
+.table {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+  align-items: start;
+}
+
+.board-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+#map { display: block; max-width: 100%; }
+
+.key {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 22px;
+  font-weight: 700;
+  color: var(--cream-2);
+}
+.key li { display: flex; align-items: center; gap: 8px; }
+.key canvas { width: 30px; height: 30px; }
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel section {
+  background: var(--table-2);
+  border: 2px solid #3a2c25;
+  border-radius: 14px;
+  padding: 10px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+h2 { font-size: 1.15rem; font-weight: 800; color: var(--cream-2); }
+
+.pad {
+  display: grid;
+  grid-template-columns: repeat(3, 60px);
+  grid-template-rows: repeat(3, 50px);
+  gap: 6px;
+  justify-content: center;
+}
+.arrow { font-size: 1.5rem; padding: 0; }
+.arrow.up { grid-area: 1 / 2; }
+.arrow.left { grid-area: 2 / 1; }
+.arrow.right { grid-area: 2 / 3; }
+.arrow.down { grid-area: 3 / 2; }
+
+.hint { text-align: center; color: var(--muted); font-size: 0.95rem; margin-top: -2px; }
+
+.wide { width: 100%; font-size: 1.15rem; padding: 8px 14px; }
+
+/* ---------- Smaller screens ---------- */
+
+@media (max-width: 900px) {
+  html { font-size: 16px; }
+  body { padding: 12px; }
+  .table { grid-template-columns: minmax(0, 1fr); }
+  .panel { flex-direction: row; flex-wrap: wrap; }
+  .panel section { flex: 1 1 260px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status.bump { animation: none; }
+  .card { transition: none; }
+}
