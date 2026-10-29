@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <!--
-THESIS: The maze is a printed board game laid on a dark table. Every state is a physical piece or a printed rules card, never a glowing sci-fi dashboard.
-OWN-WORLD: The board is die-cut ochre sand tiles in a dark printed frame with cream coordinates. The pieces are hatched basalt boulders, a cream rover token, a checkered flag on a green base and navy numbered move counters. The controls are card-stock buttons with a pressed edge. States are told apart by stripe pattern, icon shape and words, as well as by colour.
-STORY: The class sees where the rover is, what it just tried, and why it stopped. The route reads as numbered counters, so they can count it themselves.
-FIRST VIEWPORT: The title and maze tabs sit on top. The status rules card spans the full width. The board fills the left side, and the drive pad and planner sit in the right column.
-FORM: Board game, the fourth candidate on the ordered list; staging is a single board with a rules card; seed e60bec64.
+THESIS: The maze is an orbital photo of Mars with a planner's grid laid over it, read like a rover driver's traverse map. Not a board game, not a neon sci-fi dashboard.
+OWN-WORLD: Procedural butterscotch regolith with wind ripples. Boulders are lit from the west and cast long shadows. A white six-wheeled rover is seen from above. The target is a white crosshair ring. The planned traverse is a yellow line with large numbered waypoints. Chrome is slate telemetry, with GO / NO-GO / FAULT badges that pair a shape with a word.
+STORY: The class sees where the rover is, which way it faces, what it tried and why it stopped. Then they count the waypoints themselves.
+FIRST VIEWPORT: Title and maze tabs on top. A full-width telemetry status strip. The orbital map on the left, with coordinates on every edge. The drive pad and plan panel in a right rail.
+FORM: Brief-pinned orbital traverse map (HiRISE-style); staging is a single map with a telemetry rail; no seed roll.
 -->
 <html lang="en">
 <head>
@@ -24,21 +24,29 @@ FORM: Board game, the fourth candidate on the ordered list; staging is a single 
   </header>
 
   <section id="status" class="status" data-kind="info" role="status" aria-live="polite">
-    <span class="status-icon" id="status-icon" aria-hidden="true"></span>
+    <div class="status-badge" aria-hidden="true">
+      <span class="status-icon"></span>
+      <span class="status-word"></span>
+    </div>
     <div class="status-text">
-      <p class="status-title" id="status-title">Loading the board…</p>
+      <p class="status-title" id="status-title">Loading the map…</p>
       <p class="status-detail" id="status-detail"></p>
     </div>
+    <dl class="telemetry">
+      <div><dt>Position</dt><dd id="tm-position">–</dd></div>
+      <div><dt>Moves</dt><dd id="tm-moves">–</dd></div>
+    </dl>
   </section>
 
-  <main class="table">
+  <main class="console">
     <div class="board-wrap" id="board-wrap">
-      <canvas id="map" aria-label="Map of the Mars maze"></canvas>
+      <canvas id="map" aria-label="Orbital map of the Mars maze"></canvas>
       <ul class="key" aria-label="Map key">
         <li><canvas data-key="rover" aria-hidden="true"></canvas>Rover</li>
-        <li><canvas data-key="goal" aria-hidden="true"></canvas>Goal</li>
+        <li><canvas data-key="goal" aria-hidden="true"></canvas>Target</li>
         <li><canvas data-key="rock" aria-hidden="true"></canvas>Rock</li>
-        <li class="key-route"><canvas data-key="step" aria-hidden="true"></canvas>Route step</li>
+        <li class="key-route"><canvas data-key="step" aria-hidden="true"></canvas>Waypoint</li>
+        <li class="key-scale">1 square = 1 move · up is north</li>
       </ul>
     </div>
 
@@ -46,13 +54,13 @@ FORM: Board game, the fourth candidate on the ordered list; staging is a single 
       <section class="drive" aria-label="Drive the rover">
         <h2>Drive</h2>
         <div class="pad">
-          <button class="card arrow up" data-direction="up" aria-label="Up" aria-keyshortcuts="ArrowUp">▲</button>
-          <button class="card arrow left" data-direction="left" aria-label="Left" aria-keyshortcuts="ArrowLeft">◀</button>
-          <button class="card arrow right" data-direction="right" aria-label="Right" aria-keyshortcuts="ArrowRight">▶</button>
-          <button class="card arrow down" data-direction="down" aria-label="Down" aria-keyshortcuts="ArrowDown">▼</button>
+          <button class="btn arrow up" data-direction="up" aria-label="Up" aria-keyshortcuts="ArrowUp">▲</button>
+          <button class="btn arrow left" data-direction="left" aria-label="Left" aria-keyshortcuts="ArrowLeft">◀</button>
+          <button class="btn arrow right" data-direction="right" aria-label="Right" aria-keyshortcuts="ArrowRight">▶</button>
+          <button class="btn arrow down" data-direction="down" aria-label="Down" aria-keyshortcuts="ArrowDown">▼</button>
         </div>
         <p class="hint">or use the arrow keys</p>
-        <button id="reset" class="card wide">Back to start</button>
+        <button id="reset" class="btn wide">Back to start</button>
       </section>
 
       <section class="planner" aria-label="Route planner">
@@ -62,7 +70,7 @@ FORM: Board game, the fourth candidate on the ordered list; staging is a single 
             <span>Battery</span>
             <input id="battery" type="number" min="0" step="1" inputmode="numeric" placeholder="–">
           </label>
-          <button id="solve" class="card wide primary">Solve</button>
+          <button id="solve" class="btn wide primary">Solve</button>
         </div>
         <div id="battery-track" class="battery-track" hidden></div>
       </section>
