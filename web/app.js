@@ -351,19 +351,64 @@ function showMazeTabs() {
 
 // ---------- Route planning ----------
 
+const batteryInput = document.getElementById("battery");
+const batteryTrack = document.getElementById("battery-track");
+
 async function solve() {
-  const result = await api("/api/solve", {});
+  const battery = batteryInput.value.trim();
+  const result = await api("/api/solve", battery === "" ? {} : { battery });
   route = result.route || null;
   draw();
-  if (result.error) {
+
+  if (result.error && result.charge === undefined && battery !== "") {
+    showBattery(null);
+    setStatus("bad", result.error, "Type a whole number of battery units, like 6, or leave the box empty.");
+  } else if (result.error) {
+    showBattery(null);
     setStatus("bad", "No route exists",
       "Rocks wall off the flag, so no sequence of up, down, left and right moves can reach it.");
-  } else {
+  } else if (result.reachable === undefined) {
+    showBattery(null);
     setStatus("good", `Route: ${result.moves} moves`, "Follow the numbered counters. The last number is the move count.");
+  } else {
+    showBattery(result);
+    const spare = result.charge - result.moves;
+    if (result.reachable) {
+      setStatus("good", `Reachable: ${result.moves} moves, battery ${result.charge}`,
+        spare === 0
+          ? "Exactly enough. One move uses one unit, so the battery will be empty at the flag."
+          : `One move uses one unit, so ${spare} unit${spare === 1 ? "" : "s"} will be left over.`);
+    } else {
+      setStatus("bad", `Not reachable: ${result.moves} moves, battery ${result.charge}`,
+        `The route needs ${result.moves} units. The battery is ${-spare} short.`);
+    }
   }
 }
 
+// A board-game resource track: one peg per unit of charge, with the route's cost marked against it.
+function showBattery(result) {
+  batteryTrack.hidden = !result;
+  if (!result) return;
+  const pegs = Math.max(result.charge, result.moves);
+  const label = `<p class="track-label"><strong>${result.moves}</strong> needed · <strong>${result.charge}</strong> in battery</p>`;
+  if (pegs > 60) {
+    batteryTrack.innerHTML = label;
+    return;
+  }
+  let html = "";
+  for (let i = 1; i <= pegs; i++) {
+    const charged = i <= result.charge;
+    const used = i <= result.moves;
+    const kind = charged ? (used ? "charged used" : "charged") : "short";
+    html += `<span class="peg ${kind}"></span>`;
+  }
+  batteryTrack.innerHTML = `<div class="pegs" aria-hidden="true">${html}</div>${label}`;
+}
+
 document.getElementById("solve").addEventListener("click", solve);
+batteryInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") solve();
+});
 
 // ---------- Wiring ----------
 

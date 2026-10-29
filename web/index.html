@@ -57,7 +57,14 @@ FORM: Board game, the fourth candidate on the ordered list; staging is a single 
 
       <section class="planner" aria-label="Route planner">
         <h2>Plan</h2>
-        <button id="solve" class="card wide primary">Solve</button>
+        <div class="plan-row">
+          <label class="field">
+            <span>Battery</span>
+            <input id="battery" type="number" min="0" step="1" inputmode="numeric" placeholder="–">
+          </label>
+          <button id="solve" class="card wide primary">Solve</button>
+        </div>
+        <div id="battery-track" class="battery-track" hidden></div>
       </section>
     </aside>
   </main>

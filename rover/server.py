@@ -6,7 +6,7 @@ It serves the web page in web/ and a JSON API that the page calls:
     GET  /api/state?maze=NAME    -> the grid and the rover (switches maze if NAME is given)
     POST /api/move  {direction}  -> try to move the rover one square
     POST /api/reset {maze}       -> put the rover back on the start square
-    POST /api/solve              -> shortest route from the rover to the goal
+    POST /api/solve {battery}    -> shortest route from the rover to the goal
 
 Only the Python standard library is used.
 """
@@ -17,6 +17,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+from rover.battery import can_reach
 from rover.mazes import DEFAULT_MAZE, MAZES, load_maze
 from rover.planner import find_route
 from rover.rover import Rover
@@ -60,15 +61,37 @@ class MissionControl:
             return {"ok": False, "reason": "Bounds check not implemented", "state": self.state()}
         return {"ok": result.ok, "reason": result.reason, "state": self.state()}
 
-    def solve(self):
+    def solve(self, battery=None):
         route = find_route(self.grid, self.rover.position)
         if route is None:
-            return {"error": "No route exists"}
-        return {"route": [list(cell) for cell in route.cells], "moves": route.moves}
+            answer = {"error": "No route exists"}
+            if battery is not None:
+                answer.update({"reachable": False, "charge": battery})
+            return answer
+
+        answer = {"route": [list(cell) for cell in route.cells], "moves": route.moves}
+        if battery is not None:
+            answer.update({"reachable": can_reach(route, battery), "charge": battery})
+        return answer
 
 
 class BadRequest(Exception):
     pass
+
+
+def parse_battery(value):
+    """Turn the battery field from the page into a whole number of charge units (or None)."""
+    if value is None or value == "":
+        return None
+    if isinstance(value, bool) or isinstance(value, float):
+        raise BadRequest("Battery must be a whole number")
+    try:
+        charge = int(value)
+    except (TypeError, ValueError):
+        raise BadRequest("Battery must be a whole number")
+    if charge < 0:
+        raise BadRequest("Battery can't be negative")
+    return charge
 
 
 class RoverHandler(SimpleHTTPRequestHandler):
@@ -114,7 +137,7 @@ class RoverHandler(SimpleHTTPRequestHandler):
                     mission.reset(maze)
                     return self.send_json(mission.state())
                 if url.path == "/api/solve":
-                    return self.send_json(mission.solve())
+                    return self.send_json(mission.solve(parse_battery(body.get("battery"))))
             except BadRequest as error:
                 return self.send_json({"error": str(error)}, 400)
         self.send_json({"error": "Not found"}, 404)

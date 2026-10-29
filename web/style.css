@@ -252,6 +252,52 @@ h2 { font-size: 1.15rem; font-weight: 800; color: var(--cream-2); }
 
 .wide { width: 100%; font-size: 1.15rem; padding: 8px 14px; }
 
+.plan-row { display: flex; align-items: center; gap: 10px; }
+.plan-row .wide { flex: 1; width: auto; }
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.field input {
+  width: 4.5rem;
+  font-size: 1.3rem;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 2px solid var(--cream-2);
+  background: var(--cream);
+  color: var(--ink);
+  text-align: center;
+}
+.field input::placeholder { color: #7a6a5c; font-weight: 600; }
+
+/* ---------- Battery resource track ---------- */
+
+.battery-track { display: flex; flex-direction: column; gap: 6px; }
+.battery-track[hidden] { display: none; }
+
+.pegs { display: flex; flex-wrap: wrap; gap: 3px; }
+.peg {
+  width: 16px;
+  height: 22px;
+  border-radius: 3px;
+  border: 2px solid var(--cream-2);
+  background: transparent;
+}
+.peg.charged { background: var(--cream); border-color: var(--cream); }
+.peg.charged.used { background: var(--navy-2); border-color: var(--cream); }
+.peg.short {
+  border: 2px dashed #ff8a80;
+  background: repeating-linear-gradient(-45deg, rgb(255 138 128 / 0.55) 0 3px, transparent 3px 6px);
+}
+
+.track-label { font-size: 0.95rem; color: var(--cream-2); }
+.track-label strong { color: var(--cream); }
+
 /* ---------- Smaller screens ---------- */
 
 @media (max-width: 900px) {
