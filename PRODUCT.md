@@ -30,9 +30,10 @@ This is a teaching prop, not a game. Every visual state maps to a talking point.
 ## Brand Commitments
 - The name is "Mars Rover Mission Control".
 - The voice is plain, friendly and literal, for example "Blocked by a rock" and "That's the edge of the map".
+- The look is a believable Mars surface: an orbital traverse map with a planner's grid over it and mission-telemetry chrome. It is not a toy or a board game, and realism never costs legibility.
 
 ## Evidence on Hand
-There are no logos, images or brand assets. All visuals are drawn in code.
+There are no logos, images or brand assets. All visuals are drawn in code. The regolith texture is procedural and seeded by the maze name, so each maze always looks the same.
 
 ## Product Principles
 1. The UI must be legible from the back of the room, with big type and strong contrast.

@@ -20,8 +20,8 @@ Before you start, work through [presenter-checklist.md](presenter-checklist.md).
 
 > "You've been learning how to tell a computer what to do using Python. Today we're going to try a different approach: describe a goal, let an AI help build the solution, and then decide whether we trust what it made. You're mission control."
 
-- Point out the rover (blue), the flag (green), the rocks and the row/column numbers.
-- Say: *"Our job today is to get this rover to the flag. First by hand, then by teaching it to plan its own route."*
+- Point out the white rover (seen from above, mast at the front), the white target crosshair, the boulders and the row/column numbers. Each grid square is one move.
+- Say: *"Our job today is to get this rover to the target. First by hand, then by teaching it to plan its own route."*
 
 ## 3–8 min: From machine-learning lessons to LLMs and agents
 
