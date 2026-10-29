@@ -1,24 +1,24 @@
-/* Mars Rover Mission Control: a printed board game on a dark table.
+/* Mars Rover Mission Control: an orbital traverse map with a telemetry rail.
    Sized to be read from the back of a classroom on a projector. */
 :root {
-  --table: #191311;
-  --table-2: #241b17;
-  --frame: #2e211b;
-  --cream: #f6eddc;
-  --cream-2: #e6d8bf;
-  --ink: #1d1612;
-  --ink-soft: #4a3b31;
-  --muted: #cbb9a2;
-  --sand: #d98c4f;
-  --navy: #1f3b73;
-  --navy-2: #2c5199;
-  --good: #2f7d4f;
-  --bad: #b3261e;
-  --todo: #f2c230;
-  --radius: 10px;
-  --press: 0 4px 0 #0d0a08, 0 8px 18px rgb(0 0 0 / 0.35);
-  --press-down: 0 1px 0 #0d0a08, 0 2px 6px rgb(0 0 0 / 0.35);
+  --bg: #0e1215;
+  --panel: #161c20;
+  --panel-2: #1f282e;
+  --panel-3: #28333b;
+  --line: #2c373f;
+  --line-strong: #52626d;
+  --text: #eef2f4;
+  --muted: #a9b6bf;
+  --route: #ffd23f;
+  --good: #3ccf7f;
+  --good-bg: #10261b;
+  --bad: #ff5a52;
+  --bad-bg: #2c1315;
+  --fault: #ffb000;
+  --fault-bg: #2a2109;
+  --radius: 6px;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
 * { box-sizing: border-box; }
@@ -28,18 +28,17 @@ html { font-size: 18px; }
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--table);
-  color: var(--cream);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font);
   line-height: 1.35;
-  font-variant-numeric: tabular-nums;
-  padding: 14px 24px 14px;
+  padding: 14px 24px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-h1, h2, p { margin: 0; }
+h1, h2, p, dl, dd { margin: 0; }
 
 /* ---------- Top bar ---------- */
 
@@ -48,142 +47,142 @@ h1, h2, p { margin: 0; }
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px 24px;
+  gap: 10px 24px;
 }
 
 h1 {
-  font-size: 1.9rem;
+  font-size: 1.8rem;
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
 .mazes { display: flex; align-items: center; gap: 12px; }
 .mazes-label { font-weight: 700; color: var(--muted); }
-.maze-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.maze-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
 
-/* ---------- Card-stock buttons ---------- */
+/* ---------- Buttons ---------- */
 
 button, input { font: inherit; }
 
-.card {
+.btn {
   appearance: none;
-  border: 2px solid var(--ink);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
-  background: var(--cream);
-  color: var(--ink);
-  font-weight: 800;
+  background: var(--panel-2);
+  color: var(--text);
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: var(--press);
-  transition: transform 120ms ease-out, box-shadow 120ms ease-out, background-color 120ms ease-out;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07), 0 2px 5px rgb(0 0 0 / 0.45);
+  transition: background-color 150ms ease-out, transform 150ms ease-out;
 }
+.btn:hover { background: var(--panel-3); }
+.btn:active { transform: translateY(1px); background: #182026; box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.5); }
+.btn:focus-visible, input:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.btn:disabled { cursor: wait; opacity: 0.55; }
 
-.card:hover { background: #fff8ea; }
-.card:active { transform: translateY(3px); box-shadow: var(--press-down); }
-.card:focus-visible, input:focus-visible {
-  outline: 4px solid var(--todo);
-  outline-offset: 3px;
-}
-.card:disabled { cursor: wait; opacity: 0.6; transform: none; box-shadow: var(--press-down); }
-
-.tab { font-size: 1rem; padding: 8px 14px; }
+.tab { font-size: 1rem; padding: 7px 14px; }
 .tab[aria-pressed="true"] {
-  background: var(--navy);
-  border-color: var(--cream);
-  color: var(--cream);
-  transform: translateY(3px);
-  box-shadow: var(--press-down);
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+  box-shadow: none;
 }
 
-
-/* ---------- Status rules card ---------- */
+/* ---------- Telemetry status strip ---------- */
 
 .status {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 18px;
-  padding: 12px 22px 12px 14px;
-  background: var(--cream);
-  color: var(--ink);
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
-  box-shadow: 0 6px 16px rgb(0 0 0 / 0.4);
-  min-height: 80px;
+  padding: 10px 20px 10px 10px;
+  min-height: 84px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.35);
 }
 
+.status-badge {
+  width: 104px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 5px;
+  background: var(--panel-3);
+  color: var(--text);
+}
 .status-icon {
-  width: 62px;
-  height: 62px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
-  font-size: 2.1rem;
+  font-size: 1.3rem;
   font-weight: 900;
   line-height: 1;
-  color: var(--cream);
-  background: var(--ink-soft);
-  border-radius: 12px;
 }
-.status-icon::before { content: "i"; font-family: Georgia, "Times New Roman", serif; font-style: italic; }
+.status-icon::before { content: ""; width: 16px; height: 16px; border-radius: 50%; border: 3px solid currentColor; }
+.status-word { font-weight: 900; font-size: 1.05rem; letter-spacing: 0.04em; }
+.status-word::before { content: "READY"; }
 
 .status-title {
   font-size: 1.75rem;
-  font-weight: 850;
+  font-weight: 800;
   letter-spacing: -0.01em;
   line-height: 1.15;
 }
-.status-detail { font-size: 1.05rem; color: var(--ink-soft); margin-top: 2px; max-width: 75ch; }
+.status-detail { font-size: 1.05rem; color: var(--muted); margin-top: 3px; max-width: 70ch; }
 .status-detail:empty { display: none; }
 
-/* Good: green circle with a tick. */
-.status[data-kind="good"] { background: #e3f1e4; }
-.status[data-kind="good"] .status-icon { background: var(--good); border-radius: 50%; }
-.status[data-kind="good"] .status-icon::before { content: "✓"; font-family: var(--font); font-style: normal; }
-.status[data-kind="good"] .status-title { color: #1d5434; }
+.telemetry { display: flex; gap: 22px; }
+.telemetry dt { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.telemetry dd { font-family: var(--mono); font-size: 1.45rem; font-weight: 700; white-space: nowrap; }
 
-/* Bad: red stop-sign octagon with a cross, on a striped card. */
-.status[data-kind="bad"] {
-  background:
-    repeating-linear-gradient(-45deg, rgb(179 38 30 / 0.10) 0 12px, transparent 12px 24px),
-    #fbe6e1;
+/* GO: a green tick in a circle. */
+.status[data-kind="good"] { background: var(--good-bg); border-color: var(--good); }
+.status[data-kind="good"] .status-badge { background: var(--good); color: #052012; }
+.status[data-kind="good"] .status-icon { background: #052012; color: var(--good); border-radius: 50%; }
+.status[data-kind="good"] .status-icon::before { content: "✓"; width: auto; height: auto; border: 0; }
+.status[data-kind="good"] .status-word::before { content: "GO"; }
+
+/* NO-GO: a stop-sign octagon with a cross, on a striped badge. */
+.status[data-kind="bad"] { background: var(--bad-bg); border-color: var(--bad); }
+.status[data-kind="bad"] .status-badge {
+  background: repeating-linear-gradient(-45deg, #ff6d66 0 8px, var(--bad) 8px 16px);
+  color: #2b0505;
 }
 .status[data-kind="bad"] .status-icon {
-  background: var(--bad);
-  border-radius: 0;
+  background: #2b0505;
+  color: #fff;
   clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
 }
-.status[data-kind="bad"] .status-icon::before { content: "✕"; font-family: var(--font); font-style: normal; }
-.status[data-kind="bad"] .status-title { color: #8a1c15; }
+.status[data-kind="bad"] .status-icon::before { content: "✕"; width: auto; height: auto; border: 0; }
+.status[data-kind="bad"] .status-word::before { content: "NO-GO"; }
 
-/* To do: yellow-and-black hazard tape with a warning triangle. */
-.status[data-kind="todo"] {
-  background:
-    linear-gradient(var(--cream), var(--cream)) padding-box,
-    repeating-linear-gradient(-45deg, var(--ink) 0 14px, var(--todo) 14px 28px) border-box;
-  border: 10px solid transparent;
-  padding: 4px 14px 4px 6px;
+/* FAULT: yellow-and-black hazard stripes with a warning triangle. */
+.status[data-kind="todo"] { background: var(--fault-bg); border-color: var(--fault); }
+.status[data-kind="todo"] .status-badge {
+  background: repeating-linear-gradient(-45deg, var(--fault) 0 10px, #111 10px 20px);
+  color: #111;
 }
 .status[data-kind="todo"] .status-icon {
-  background: var(--ink);
-  color: var(--todo);
-  border-radius: 0;
-  clip-path: polygon(50% 2%, 100% 96%, 0 96%);
-  padding-top: 18px;
-  font-size: 1.8rem;
+  background: #111;
+  color: var(--fault);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  padding-top: 10px;
+  font-size: 1.1rem;
 }
-.status[data-kind="todo"] .status-icon::before { content: "!"; font-family: var(--font); font-style: normal; }
+.status[data-kind="todo"] .status-icon::before { content: "!"; width: auto; height: auto; border: 0; }
+.status[data-kind="todo"] .status-word { background: var(--fault); padding: 0 6px; border-radius: 3px; }
+.status[data-kind="todo"] .status-word::before { content: "FAULT"; }
 
-.status.bump { animation: bump 260ms cubic-bezier(0.16, 1, 0.3, 1); }
-@keyframes bump {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  55% { transform: translateX(6px); }
-  100% { transform: translateX(0); }
-}
+/* ---------- Console: map + side rail ---------- */
 
-/* ---------- Table: board + side panel ---------- */
-
-.table {
+.console {
   flex: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
@@ -195,7 +194,7 @@ button, input { font: inherit; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
 }
 
@@ -208,30 +207,28 @@ button, input { font: inherit; }
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 6px 22px;
+  align-items: center;
+  gap: 6px 20px;
   font-weight: 700;
-  color: var(--cream-2);
+  color: var(--text);
 }
 .key li { display: flex; align-items: center; gap: 8px; }
-.key canvas { width: 30px; height: 30px; }
+.key canvas { width: 32px; height: 32px; border-radius: 4px; }
+.key-scale { color: var(--muted); font-weight: 600; }
 
-.panel {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.panel { display: flex; flex-direction: column; gap: 12px; }
 
 .panel section {
-  background: var(--table-2);
-  border: 2px solid #3a2c25;
-  border-radius: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
   padding: 10px 14px 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-h2 { font-size: 1.15rem; font-weight: 800; color: var(--cream-2); }
+h2 { font-size: 1.1rem; font-weight: 800; color: var(--muted); }
 
 .pad {
   display: grid;
@@ -240,13 +237,13 @@ h2 { font-size: 1.15rem; font-weight: 800; color: var(--cream-2); }
   gap: 6px;
   justify-content: center;
 }
-.arrow { font-size: 1.5rem; padding: 0; }
+.arrow { font-size: 1.4rem; padding: 0; }
 .arrow.up { grid-area: 1 / 2; }
 .arrow.left { grid-area: 2 / 1; }
 .arrow.right { grid-area: 2 / 3; }
 .arrow.down { grid-area: 3 / 2; }
 
-.hint { text-align: center; color: var(--muted); font-size: 0.95rem; margin-top: -2px; }
+.hint { text-align: center; color: var(--muted); font-size: 0.95rem; }
 
 .wide { width: 100%; font-size: 1.15rem; padding: 8px 14px; }
 
@@ -255,12 +252,26 @@ h2 { font-size: 1.15rem; font-weight: 800; color: var(--cream-2); }
 @media (max-width: 900px) {
   html { font-size: 16px; }
   body { padding: 12px; }
-  .table { grid-template-columns: minmax(0, 1fr); }
+  .console { grid-template-columns: minmax(0, 1fr); }
   .panel { flex-direction: row; flex-wrap: wrap; }
   .panel section { flex: 1 1 260px; }
+  .status { grid-template-columns: auto minmax(0, 1fr); padding-right: 12px; }
+  .status-badge { width: 84px; }
+  .telemetry { grid-column: 1 / -1; }
+  .status-title { font-size: 1.45rem; }
+  h1 { font-size: 1.5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .status.bump { animation: none; }
-  .card { transition: none; }
+  .btn { transition: none; }
+}
+
+/* The one authored motion: a short nudge when the rover is refused or a check is missing. */
+@media (prefers-reduced-motion: no-preference) {
+  .status.bump { animation: nudge 320ms ease-out; }
+}
+@keyframes nudge {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  60% { transform: translateX(4px); }
 }
