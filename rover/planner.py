@@ -43,4 +43,4 @@ def _build_route(came_from, goal):
         cells.append(cell)
         cell = came_from[cell]
     cells.reverse()
-    return Route(cells=tuple(cells), moves=len(cells) - 1)
+    return Route(cells=tuple(cells), moves=len(cells))
