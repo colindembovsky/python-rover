@@ -95,6 +95,8 @@ button, input { font: inherit; }
   box-shadow: var(--press-down);
 }
 
+.primary { background: var(--navy); color: var(--cream); border-color: var(--cream); }
+.primary:hover { background: var(--navy-2); }
 
 /* ---------- Status rules card ---------- */
 

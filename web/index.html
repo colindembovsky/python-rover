@@ -38,6 +38,7 @@ FORM: Board game, the fourth candidate on the ordered list; staging is a single 
         <li><canvas data-key="rover" aria-hidden="true"></canvas>Rover</li>
         <li><canvas data-key="goal" aria-hidden="true"></canvas>Goal</li>
         <li><canvas data-key="rock" aria-hidden="true"></canvas>Rock</li>
+        <li class="key-route"><canvas data-key="step" aria-hidden="true"></canvas>Route step</li>
       </ul>
     </div>
 
@@ -52,6 +53,11 @@ FORM: Board game, the fourth candidate on the ordered list; staging is a single 
         </div>
         <p class="hint">or use the arrow keys</p>
         <button id="reset" class="card wide">Back to start</button>
+      </section>
+
+      <section class="planner" aria-label="Route planner">
+        <h2>Plan</h2>
+        <button id="solve" class="card wide primary">Solve</button>
       </section>
     </aside>
   </main>

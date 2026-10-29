@@ -6,6 +6,7 @@ It serves the web page in web/ and a JSON API that the page calls:
     GET  /api/state?maze=NAME    -> the grid and the rover (switches maze if NAME is given)
     POST /api/move  {direction}  -> try to move the rover one square
     POST /api/reset {maze}       -> put the rover back on the start square
+    POST /api/solve              -> shortest route from the rover to the goal
 
 Only the Python standard library is used.
 """
@@ -17,6 +18,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from rover.mazes import DEFAULT_MAZE, MAZES, load_maze
+from rover.planner import find_route
 from rover.rover import Rover
 
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
@@ -57,6 +59,12 @@ class MissionControl:
         except NotImplementedError:
             return {"ok": False, "reason": "Bounds check not implemented", "state": self.state()}
         return {"ok": result.ok, "reason": result.reason, "state": self.state()}
+
+    def solve(self):
+        route = find_route(self.grid, self.rover.position)
+        if route is None:
+            return {"error": "No route exists"}
+        return {"route": [list(cell) for cell in route.cells], "moves": route.moves}
 
 
 class BadRequest(Exception):
@@ -105,6 +113,8 @@ class RoverHandler(SimpleHTTPRequestHandler):
                         return self.send_json({"error": f"Unknown maze: {maze}"}, 404)
                     mission.reset(maze)
                     return self.send_json(mission.state())
+                if url.path == "/api/solve":
+                    return self.send_json(mission.solve())
             except BadRequest as error:
                 return self.send_json({"error": str(error)}, 400)
         self.send_json({"error": "Not found"}, 404)

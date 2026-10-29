@@ -27,6 +27,7 @@ const COLORS = {
 };
 
 let state = null; // what the server says about the maze and the rover
+let route = null; // the planned route, as a list of [row, col]
 
 async function api(path, body) {
   const options = body === undefined
@@ -91,6 +92,7 @@ function draw() {
   for (const [row, col] of state.rocks) drawRock(ctx, ...center(row, col), size);
   drawStart(...center(...state.start));
   drawGoal(ctx, ...center(...state.goal), size);
+  if (route) drawRoute();
   drawRover(ctx, ...center(...state.rover), size);
 }
 
@@ -234,6 +236,43 @@ function drawRover(c, x, y, s) {
   c.fill();
 }
 
+// Route: navy move counters numbered 1, 2, 3... so the last number is the number of moves.
+function drawRoute() {
+  ctx.strokeStyle = COLORS.navy;
+  ctx.lineWidth = Math.max(3, size * 0.08);
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.setLineDash([size * 0.12, size * 0.1]);
+  ctx.beginPath();
+  route.forEach(([row, col], i) => {
+    const [x, y] = center(row, col);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  route.forEach(([row, col], i) => {
+    if (i === 0) return;
+    const [x, y] = center(row, col);
+    const atGoal = row === state.goal[0] && col === state.goal[1];
+    // On the goal square, the counter sits in the corner so the flag stays visible.
+    const cx = atGoal ? x + size * 0.26 : x;
+    const cy = atGoal ? y + size * 0.26 : y;
+    drawStep(ctx, cx, cy, size, i);
+  });
+}
+
+function drawStep(c, x, y, s, number) {
+  const radius = s * (number > 9 ? 0.27 : 0.24);
+  token(c, x, y, radius, COLORS.navy, COLORS.cream, Math.max(2, s * 0.04));
+  c.fillStyle = COLORS.cream;
+  c.font = `800 ${Math.round(s * (number > 9 ? 0.26 : 0.3))}px system-ui, sans-serif`;
+  c.textAlign = "center";
+  c.textBaseline = "middle";
+  c.fillText(number, x, y + 1);
+}
+
 function token(c, x, y, radius, fill, rim, rimWidth = 2) {
   c.fillStyle = COLORS.shadow;
   c.beginPath();
@@ -259,7 +298,7 @@ function roundRect(c, x, y, w, h, r) {
 }
 
 function drawKey() {
-  const pieces = { rover: drawRover, goal: drawGoal, rock: drawRock };
+  const pieces = { rover: drawRover, goal: drawGoal, rock: drawRock, step: (c, x, y, s) => drawStep(c, x, y, s, 1) };
   document.querySelectorAll("canvas[data-key]").forEach((keyCanvas) => {
     const c = prepare(keyCanvas, 30, 30);
     pieces[keyCanvas.dataset.key](c, 15, 15, 30);
@@ -274,6 +313,7 @@ function where() {
 
 async function loadMaze(name) {
   state = await api(`/api/state?maze=${encodeURIComponent(name)}`);
+  route = null;
   showMazeTabs();
   draw();
   setStatus("info", `Maze: ${state.maze}`, `Drive the rover to the flag. It starts at ${where()}.`);
@@ -282,6 +322,7 @@ async function loadMaze(name) {
 async function move(direction) {
   const result = await api("/api/move", { direction });
   state = result.state;
+  route = null;
   draw();
   if (result.reason === "Bounds check not implemented") {
     setStatus("todo", "Bounds check not implemented",
@@ -297,6 +338,7 @@ async function move(direction) {
 
 async function reset() {
   state = await api("/api/reset", { maze: state.maze });
+  route = null;
   draw();
   setStatus("info", "Back at the start", `The rover is at ${where()}. Moves so far: 0.`);
 }
@@ -306,6 +348,22 @@ function showMazeTabs() {
     tab.setAttribute("aria-pressed", String(tab.dataset.maze === state.maze));
   });
 }
+
+// ---------- Route planning ----------
+
+async function solve() {
+  const result = await api("/api/solve", {});
+  route = result.route || null;
+  draw();
+  if (result.error) {
+    setStatus("bad", "No route exists",
+      "Rocks wall off the flag, so no sequence of up, down, left and right moves can reach it.");
+  } else {
+    setStatus("good", `Route: ${result.moves} moves`, "Follow the numbered counters. The last number is the move count.");
+  }
+}
+
+document.getElementById("solve").addEventListener("click", solve);
 
 // ---------- Wiring ----------
 
