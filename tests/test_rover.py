@@ -10,7 +10,6 @@ GRID = Grid.from_ascii("""
 """)
 
 
-@unittest.skip("needs is_inside_grid (Demo 1)")
 class RoverTests(unittest.TestCase):
     def test_moves_onto_sand(self):
         rover = Rover((0, 0))

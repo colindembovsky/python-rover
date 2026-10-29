@@ -16,8 +16,7 @@ DIRECTIONS = {
 
 def is_inside_grid(row, col, rows, cols):
     """Return True if (row, col) is a square on a grid with `rows` rows and `cols` columns."""
-    # Demo 1: ask Copilot to write this, then check its answer for row 0, row -1 and row 10.
-    raise NotImplementedError("Bounds check not implemented")
+    return 0 <= row < rows and 0 <= col < cols
 
 
 @dataclass(frozen=True)
